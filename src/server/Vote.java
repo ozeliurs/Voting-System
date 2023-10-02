@@ -5,13 +5,12 @@ import shared.Candidate;
 import java.util.Date;
 import java.util.List;
 
-public class Vote implements shared.Vote{
+public class Vote implements shared.Vote {
 
     private Date start;
     private Date end;
 
     private List<Candidate> candidates;
-
 
 
     public Vote(Date start, Date end) {
@@ -28,6 +27,5 @@ public class Vote implements shared.Vote{
     public void addCandidates(List<Candidate> candidates) {
 
     }
-
 
 }
