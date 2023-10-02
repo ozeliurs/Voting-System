@@ -7,16 +7,6 @@ import java.util.*;
  */
 public interface Vote {
     /**
-     * 
-     */
-    Date start = null;
-
-    /**
-     * 
-     */
-    Date end = null;
-
-    /**
      * @return
      */
     public Candidate getVoteMaterial();
