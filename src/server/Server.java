@@ -13,7 +13,6 @@ public class Server {
         ObjectDistant objDist = new ObjectDistant(10001);
         Registry registery = LocateRegistry.createRegistry(2001);
         Naming.rebind("rmi://localhost:2001/objDist", objDist);
-
     }
 
 
