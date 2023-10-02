@@ -1,10 +1,6 @@
 package server;
 
-import shared.Candidate;
-
-import java.util.Map;
-
-public class User implements shared.User{
+public class User {
 
     private String studentId;
 
@@ -13,15 +9,5 @@ public class User implements shared.User{
     public User(String studentId, String passwordHash) {
         this.studentId = studentId;
         this.passwordHash = passwordHash;
-    }
-
-    @Override
-    public void vote(Map<Candidate, Integer> candidates) {
-
-    }
-
-    @Override
-    public void checkCredentials(String studentId, String passwordHash) {
-
     }
 }
