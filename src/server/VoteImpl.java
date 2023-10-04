@@ -36,7 +36,7 @@ public class VoteImpl implements shared.Vote {
 
         br.lines().forEach(line -> {
             String[] parts = line.split(",");
-            candidates.add(new server.Candidate(Integer.parseInt(parts[0]), parts[1], parts[2]));
+            candidates.add(new CandidateImpl(Integer.parseInt(parts[0]), parts[1], parts[2], parts[3]));
         });
     }
 

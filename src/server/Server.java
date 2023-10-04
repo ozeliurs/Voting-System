@@ -1,8 +1,5 @@
 package server;
 
-import shared.Candidate;
-import shared.Vote;
-
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -23,8 +20,10 @@ public class Server {
         Scanner scanner = new Scanner(System.in);
 
         // Create and Bind Objects
-        UserRepository userRepository = new UserRepository(10001);
-        Naming.rebind("rmi://localhost:2001/userRepository", userRepository);
+        UserRepositoryImpl userRepositoryImpl = new UserRepositoryImpl(10001);
+        Naming.rebind("rmi://localhost:2001/userRepositoryImpl", userRepositoryImpl);
+
+        userRepositoryImpl.importUsers("users.txt");
 
         // Start a Vote
         VoteImpl vote = new VoteImpl();
