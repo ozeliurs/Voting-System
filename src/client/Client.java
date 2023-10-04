@@ -24,8 +24,8 @@ public class Client implements Serializable {
         String password = System.console().readLine();
 
         // Hash password
-        SCryptPasswordEncoder encoder = new SCryptPasswordEncoder();
-        password = encoder.encode(password);
+        //SCryptPasswordEncoder encoder = new SCryptPasswordEncoder();
+        //password = encoder.encode(password);
 
         try {
             userRepository.checkCredentials(login, password);
