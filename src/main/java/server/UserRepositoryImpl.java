@@ -2,6 +2,7 @@ package server;
 
 import exceptions.BadCredentialsException;
 import exceptions.HasAlreadyVotedException;
+import exceptions.UserNotFoundException;
 import shared.Candidate;
 
 import java.rmi.RemoteException;
@@ -22,7 +23,18 @@ public class UserRepositoryImpl extends UnicastRemoteObject implements shared.Us
     }
 
     @Override
-    public void checkCredentials(String studentId, String passwordHash) throws BadCredentialsException, RemoteException {
+    public int checkCredentials(String studentId, String passwordHash) throws UserNotFoundException, BadCredentialsException, RemoteException {
+        System.out.println("checkCredentials");
+        System.out.println("studentId: " + studentId);
+        System.out.println("passwordHash: " + passwordHash);
+
+        User user = users.stream().filter(u -> u.getStudentId().equals(studentId)).findFirst().orElseThrow(UserNotFoundException::new);
+
+        if (user.checkPasswordHash(passwordHash)) {
+            return user.generatePin();
+        } else {
+            throw new BadCredentialsException();
+        }
     }
 
     public void importUsers(String file) {

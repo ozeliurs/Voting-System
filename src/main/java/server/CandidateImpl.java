@@ -51,4 +51,13 @@ public class CandidateImpl implements shared.Candidate {
     public int hashCode() {
         return Objects.hash(id, name, surname, pitch);
     }
+
+    @Override
+    public String toString() {
+        return "CandidateImpl{" + "id=" + id +
+                ", name='" + name + "'" +
+                ", surname='" + surname + "'" +
+                ", pitch='" + pitch + "'" +
+                "}";
+    }
 }

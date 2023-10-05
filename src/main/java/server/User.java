@@ -1,7 +1,5 @@
 package server;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Objects;
 
@@ -22,13 +20,8 @@ public class User {
         return studentId;
     }
 
-    public boolean checkPassword(String password) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            return this.passwordHash.equals(new String(md.digest(password.getBytes())));
-        } catch (NoSuchAlgorithmException e) {
-            return false;
-        }
+    public boolean checkPasswordHash(String passwordHash) {
+        return this.passwordHash.equals(passwordHash);
     }
 
     public int generatePin() {

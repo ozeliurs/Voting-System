@@ -21,20 +21,22 @@ public class Server {
 
         // Create and Bind Objects
         UserRepositoryImpl userRepositoryImpl = new UserRepositoryImpl(10001);
-        Naming.rebind("rmi://localhost:2001/userRepositoryImpl", userRepositoryImpl);
+        Naming.rebind("rmi://localhost:2001/userRepository", userRepositoryImpl);
 
         userRepositoryImpl.importUsers("users.txt");
 
         // Start a Vote
-        VoteImpl vote = new VoteImpl();
+        VoteImpl voteImpl = new VoteImpl();
 
         System.out.println("Loading candidates from file...");
-        vote.importCandidates("candidates.txt");
+        voteImpl.importCandidates(scanner.nextLine());
+
+        System.out.println(voteImpl.getCandidates());
 
         System.out.print("Enter the start date (dd/mm/yyyy): ");
-        vote.setStart(scanner.nextLine());
+        voteImpl.setStart(scanner.nextLine());
 
         System.out.print("Enter the end date (dd/mm/yyyy): ");
-        vote.setEnd(scanner.nextLine());
+        voteImpl.setEnd(scanner.nextLine());
     }
 }
