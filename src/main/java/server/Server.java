@@ -4,6 +4,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
@@ -14,8 +15,9 @@ import java.util.Scanner;
 public class Server {
     public static void main(String[] args) throws IOException {
         // Set Se
-        //System.setProperty("java.rmi.server.hostname", "IPADDRESS");
-
+        String ip = Inet4Address.getLocalHost().getHostAddress();
+        System.out.println("Server listening on " + ip);
+        System.setProperty("java.rmi.server.hostname", ip);
 
         // Create Registry
         Registry registry = LocateRegistry.createRegistry(2001);
