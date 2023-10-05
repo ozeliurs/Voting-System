@@ -9,7 +9,7 @@ public class User {
 
     private String passwordHash;
 
-    private int pin;
+    private int otp;
 
     public User(String studentId, String passwordHash) {
         this.studentId = studentId;
@@ -28,13 +28,13 @@ public class User {
         return this.passwordHash.equals(passwordHash);
     }
 
-    public int generatePin() {
-        pin =  new SecureRandom().nextInt(10000);
-        return pin;
+    public int generateOTP() {
+        otp =  new SecureRandom().nextInt(10000);
+        return otp;
     }
 
-    public boolean checkPin(int pin) {
-        return this.pin == pin;
+    public boolean checkOTP(int otp) {
+        return this.otp == otp;
     }
 
     @Override

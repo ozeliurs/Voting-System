@@ -10,4 +10,8 @@ import java.util.*;
 public interface Vote extends Remote {
     int checkCredentials(String username, String passwordHash) throws UserNotFoundException, BadCredentialsException, RemoteException;
     List<Candidate> getCandidates() throws RemoteException;
+
+    void vote(Ballot ballot, String studentId, int otp) throws RemoteException;
+
+    Map<Candidate, Integer> getResults() throws RemoteException;
 }

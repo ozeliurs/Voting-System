@@ -2,16 +2,15 @@ package server;
 
 import exceptions.BadCredentialsException;
 import exceptions.UserNotFoundException;
+import shared.Ballot;
+import shared.Candidate;
 import shared.Vote;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class VoteImpl extends UnicastRemoteObject implements Vote {
 
@@ -19,6 +18,8 @@ public class VoteImpl extends UnicastRemoteObject implements Vote {
     private Date end;
     public transient CandidateRepository candidateRepo;
     public transient UserRepository userRepo;
+
+    private Map<User, Ballot> votes = new HashMap<>();
 
     protected VoteImpl(int port) throws RemoteException {
         super(port);
@@ -34,6 +35,44 @@ public class VoteImpl extends UnicastRemoteObject implements Vote {
     @Override
     public List<shared.Candidate> getCandidates() throws RemoteException {
         return candidateRepo.getCandidates();
+    }
+
+    @Override
+    public void vote(Ballot ballot, String studentId, int otp) throws RemoteException {
+        User user = userRepo.findUser(studentId);
+
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        if (!user.checkOTP(otp)) {
+            throw new IllegalArgumentException("OTP is incorrect");
+        }
+
+        if (votes.containsKey(user)) {
+            throw new IllegalArgumentException("User has already voted");
+        }
+
+        votes.put(user, ballot);
+    }
+
+    @Override
+    public Map<Candidate, Integer> getResults() throws RemoteException {
+        Map<Candidate, Integer> results = new HashMap<>();
+
+        for (Ballot ballot : votes.values()) {
+            for (Map.Entry<Candidate, Integer> entry : ballot.entrySet()) {
+                Candidate candidate = entry.getKey();
+
+                if (results.containsKey(candidate)) {
+                    results.put(candidate, results.get(candidate) + entry.getValue());
+                } else {
+                    results.put(candidate, entry.getValue());
+                }
+            }
+        }
+
+        return results;
     }
 
     // ===== Getters and setters =====

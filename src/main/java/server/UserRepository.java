@@ -36,7 +36,7 @@ public class UserRepository {
         User user = users.stream().filter(u -> u.getStudentId().equals(studentId)).findFirst().orElseThrow(UserNotFoundException::new);
 
         if (user.checkPasswordHash(passwordHash)) {
-            return user.generatePin();
+            return user.generateOTP();
         } else {
             throw new BadCredentialsException();
         }
@@ -54,5 +54,9 @@ public class UserRepository {
         BufferedWriter writer = new BufferedWriter(new FileWriter(filepath));
         writer.write(csv.toString());
         writer.close();
+    }
+
+    public User findUser(String studentId) {
+        return users.stream().filter(u -> u.getStudentId().equals(studentId)).findFirst().orElse(null);
     }
 }
