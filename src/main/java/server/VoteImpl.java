@@ -1,7 +1,9 @@
 package server;
 
 import exceptions.BadCredentialsException;
+import exceptions.TimeExeededException;
 import exceptions.UserNotFoundException;
+import org.apache.commons.lang3.tuple.Pair;
 import shared.AuthentificationStub;
 import shared.Ballot;
 import shared.Candidate;
@@ -23,7 +25,7 @@ public class VoteImpl extends UnicastRemoteObject implements Vote {
 
     private Logger logger = Logger.getLogger(VoteImpl.class.getName());
 
-    private final Map<User, Ballot> votes = new HashMap<>();
+    private final Map<User, Pair<Date, Ballot>> votes = new HashMap<>();
 
     protected VoteImpl(int port) throws RemoteException {
         super(port);
@@ -52,39 +54,44 @@ public class VoteImpl extends UnicastRemoteObject implements Vote {
     }
 
     @Override
-    public void vote(Ballot ballot, String studentId, int otp) throws RemoteException {
+    public void vote(Ballot ballot, String studentId, int otp) throws RemoteException, BadCredentialsException, TimeExeededException {
         if (votingForbidden()) {
             logger.warning("Voting period is over");
-            throw new IllegalArgumentException("Voting period is over");
+            throw new TimeExeededException();
         }
 
         User user = userRepo.findUser(studentId);
 
         if (user == null) {
             logger.warning("User not found");
-            throw new IllegalArgumentException("User not found");
+            throw new BadCredentialsException();
         }
 
         if (!user.checkOTP(otp)) {
             logger.warning("OTP is incorrect");
-            throw new IllegalArgumentException("OTP is incorrect");
+            throw new BadCredentialsException();
         }
 
         if (votes.containsKey(user)) {
-            logger.warning("User has already voted");
-            throw new IllegalArgumentException("User has already voted");
+            logger.warning("User already voted");
         }
 
         logger.info("User " + user.getStudentId() + " voted");
-        votes.put(user, ballot);
+        Pair<Date, Ballot> p = Pair.of(new Date(), ballot);
+        votes.put(user, p);
+
+        if (votes.size() == userRepo.users.size()) {
+            logger.info("All users have voted");
+            printResults();
+        }
     }
 
     @Override
     public Map<Candidate, Integer> getResults() throws RemoteException {
         Map<Candidate, Integer> results = new HashMap<>();
 
-        for (Ballot ballot : votes.values()) {
-            for (Map.Entry<Candidate, Integer> entry : ballot.entrySet()) {
+        for (Pair<Date, Ballot> ballot : votes.values()) {
+            for (Map.Entry<Candidate, Integer> entry : ballot.getRight().entrySet()) {
                 Candidate candidate = entry.getKey();
 
                 if (results.containsKey(candidate)) {
@@ -100,6 +107,12 @@ public class VoteImpl extends UnicastRemoteObject implements Vote {
     }
 
     // ===== Getters and setters =====
+
+    private void printResults() throws RemoteException {
+        Map<Candidate, Integer> results = getResults();
+        System.out.println("Results:");
+        results.forEach((candidate, integer) -> System.out.println(candidate + ": " + integer));
+    }
 
     public void importCandidates(String filepath) throws IOException {
         candidateRepo = new CandidateRepository(filepath);

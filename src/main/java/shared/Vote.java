@@ -1,6 +1,7 @@
 package shared;
 
 import exceptions.BadCredentialsException;
+import exceptions.TimeExeededException;
 import exceptions.UserNotFoundException;
 
 import java.rmi.Remote;
@@ -13,7 +14,7 @@ public interface Vote extends Remote {
 
     int authenticate(AuthentificationStub authentificationStub) throws RemoteException, UserNotFoundException, BadCredentialsException;
 
-    void vote(Ballot ballot, String studentId, int otp) throws RemoteException;
+    void vote(Ballot ballot, String studentId, int otp) throws RemoteException, BadCredentialsException, TimeExeededException;
 
     Map<Candidate, Integer> getResults() throws RemoteException;
 }

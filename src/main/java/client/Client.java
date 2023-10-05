@@ -1,8 +1,8 @@
 package client;
 
 import exceptions.BadCredentialsException;
+import exceptions.TimeExeededException;
 import exceptions.UserNotFoundException;
-import org.apache.commons.codec.digest.DigestUtils;
 import shared.AuthentificationStub;
 import shared.Vote;
 
@@ -14,7 +14,7 @@ import java.rmi.RemoteException;
 import java.util.Scanner;
 
 public class Client implements Serializable {
-    public static void main(String[] args) throws MalformedURLException, NotBoundException, RemoteException, UserNotFoundException, BadCredentialsException {
+    public static void main(String[] args) throws MalformedURLException, NotBoundException, RemoteException, UserNotFoundException, BadCredentialsException, TimeExeededException {
         // Load remote objects
         Vote vote = (Vote) Naming.lookup("rmi://localhost:2001/vote");
 
@@ -54,7 +54,7 @@ public class Client implements Serializable {
         }
     }
 
-    public static void vote(Vote vote, String studentId, int otp) throws RemoteException {
+    public static void vote(Vote vote, String studentId, int otp) throws RemoteException, TimeExeededException, BadCredentialsException {
         Scanner scanner = new Scanner(System.in);
 
         BallotImpl ballot = new BallotImpl();
