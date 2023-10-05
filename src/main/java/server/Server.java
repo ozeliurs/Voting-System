@@ -29,7 +29,7 @@ public class Server {
         System.out.print("Enter the candidates file: ");
         voteImpl.importCandidates(scanner.nextLine());
 
-        System.out.println("Enter the users file: ");
+        System.out.print("Enter the users file: ");
         voteImpl.importUsers(scanner.nextLine());
 
         System.out.print("Enter the start date (dd/mm/yyyy): ");

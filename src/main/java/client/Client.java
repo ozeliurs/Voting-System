@@ -42,8 +42,32 @@ public class Client implements Serializable {
             return;
         }
 
-        // Vote
-        System.out.println("=== Vote ===");
+        while (true) {
+            System.out.println("Choose an action:");
+            System.out.println("1. Vote");
+            System.out.println("2. Results");
+            System.out.println("3. Exit");
+
+            int action = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (action) {
+                case 1:
+                    vote(vote, studentId, otp);
+                    break;
+                case 2:
+                    results(vote);
+                    break;
+                case 3:
+                default:
+                    return;
+            }
+        }
+    }
+
+    public static void vote(Vote vote, String studentId, int otp) throws RemoteException {
+        Scanner scanner = new Scanner(System.in);
+
         BallotImpl ballot = new BallotImpl();
         ballot.addCandidates(vote.getCandidates());
 
@@ -58,8 +82,9 @@ public class Client implements Serializable {
         });
 
         vote.vote(ballot, studentId, otp);
+    }
 
-        System.out.println("=== Voted ===");
-
+    public static void results(Vote vote) throws RemoteException {
+        vote.getResults().forEach((candidate, integer) -> System.out.println(candidate + ": " + integer));
     }
 }
