@@ -1,8 +1,11 @@
 package server;
 
+import shared.Candidate;
+
+import java.io.Serializable;
 import java.util.Objects;
 
-public class CandidateImpl implements shared.Candidate {
+public class CandidateImpl implements Candidate, Serializable {
     private int id;
     private String name;
     private String surname;
