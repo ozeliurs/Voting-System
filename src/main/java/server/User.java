@@ -20,6 +20,10 @@ public class User {
         return studentId;
     }
 
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
     public boolean checkPasswordHash(String passwordHash) {
         return this.passwordHash.equals(passwordHash);
     }

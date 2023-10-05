@@ -5,6 +5,7 @@ import exceptions.UserNotFoundException;
 import shared.Vote;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -16,14 +17,15 @@ public class VoteImpl extends UnicastRemoteObject implements Vote {
 
     private Date start;
     private Date end;
-    private transient CandidateRepository candidateRepo;
-    private transient UserRepository userRepo;
+    public transient CandidateRepository candidateRepo;
+    public transient UserRepository userRepo;
 
     protected VoteImpl(int port) throws RemoteException {
         super(port);
     }
 
 
+    // ===== RMI methods =====
     @Override
     public int checkCredentials(String username, String passwordHash) throws UserNotFoundException, BadCredentialsException, RemoteException {
         return userRepo.checkCredentials(username, passwordHash);
@@ -34,19 +36,15 @@ public class VoteImpl extends UnicastRemoteObject implements Vote {
         return candidateRepo.getCandidates();
     }
 
-    public void setCandidateRepo(CandidateRepository candidateRepo) {
-        this.candidateRepo = candidateRepo;
+    // ===== Getters and setters =====
+
+    public void importCandidates(String filepath) throws IOException {
+        candidateRepo = new CandidateRepository(filepath);
     }
 
-    public void importCandidates(String filename) throws FileNotFoundException {
-        candidateRepo = CandidateRepository.fromFile(filename);
+    public void importUsers(String filepath) throws FileNotFoundException {
+        userRepo = new UserRepository(filepath);
     }
-
-    public void importUsers(String filename) throws FileNotFoundException {
-        userRepo = UserRepository.fromFile(filename);
-    }
-
-
 
     public Date getStart() {
         return start;

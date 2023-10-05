@@ -15,7 +15,6 @@ import java.util.Scanner;
 public class Client implements Serializable {
     public static void main(String[] args) throws MalformedURLException, NotBoundException, RemoteException {
         // Load remote objects
-        // TODO UserRepository userRepository = (UserRepository) Naming.lookup("rmi://localhost:2001/userRepository");
         Vote vote = (Vote) Naming.lookup("rmi://localhost:2001/vote");
 
         Scanner scanner = new Scanner(System.in);

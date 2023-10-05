@@ -3,14 +3,25 @@ package server;
 import exceptions.BadCredentialsException;
 import exceptions.UserNotFoundException;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepository {
-    private List<User> users;
+    public List<User> users;
+    private String filepath;
+
+    public UserRepository(String filepath) throws FileNotFoundException {
+        this.filepath = filepath;
+        users = new ArrayList<>();
+
+        BufferedReader br = new BufferedReader(new FileReader(filepath));
+
+        br.lines().forEach(line -> {
+            String[] parts = line.split(",");
+            users.add(new User(parts[0], parts[1]));
+        });
+    }
 
     public UserRepository(List<User> users) {
         super();
@@ -31,16 +42,17 @@ public class UserRepository {
         }
     }
 
-    public static UserRepository fromFile(String file) throws FileNotFoundException {
-        List<User> users = new ArrayList<>();
-
-        BufferedReader br = new BufferedReader(new FileReader(file));
-
-        br.lines().forEach(line -> {
-            String[] parts = line.split(",");
-            users.add(new User(parts[0], parts[1]));
+    public void save() throws IOException {
+        // Write to a csv file
+        StringBuilder csv = new StringBuilder();
+        users.forEach(user -> {
+            csv.append(user.getStudentId()).append(",");
+            csv.append(user.getPasswordHash()).append("\n");
         });
 
-        return new UserRepository(users);
+        // Write to file
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filepath));
+        writer.write(csv.toString());
+        writer.close();
     }
 }
