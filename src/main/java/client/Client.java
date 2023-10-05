@@ -48,6 +48,7 @@ public class Client implements Serializable {
                     break;
                 case 3:
                 default:
+                    System.exit(0);
                     return;
             }
         }
