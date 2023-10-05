@@ -2,6 +2,7 @@ package server;
 
 import exceptions.BadCredentialsException;
 import exceptions.UserNotFoundException;
+import shared.AuthentificationStub;
 import shared.Ballot;
 import shared.Candidate;
 import shared.Vote;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class VoteImpl extends UnicastRemoteObject implements Vote {
 
@@ -18,6 +20,8 @@ public class VoteImpl extends UnicastRemoteObject implements Vote {
     private Date end;
     public transient CandidateRepository candidateRepo;
     public transient UserRepository userRepo;
+
+    private Logger logger = Logger.getLogger(VoteImpl.class.getName());
 
     private final Map<User, Ballot> votes = new HashMap<>();
 
@@ -38,25 +42,40 @@ public class VoteImpl extends UnicastRemoteObject implements Vote {
     }
 
     @Override
+    public int authenticate(AuthentificationStub authentificationStub) throws RemoteException, UserNotFoundException, BadCredentialsException {
+        System.out.println("Getting User");
+        String studentId = authentificationStub.getStudentId();
+        System.out.println("Getting Password");
+        String passwordHash = authentificationStub.getPasswordHash();
+
+        return userRepo.checkCredentials(studentId, passwordHash);
+    }
+
+    @Override
     public void vote(Ballot ballot, String studentId, int otp) throws RemoteException {
-        if (!isVotingPeriod()) {
+        if (votingForbidden()) {
+            logger.warning("Voting period is over");
             throw new IllegalArgumentException("Voting period is over");
         }
 
         User user = userRepo.findUser(studentId);
 
         if (user == null) {
+            logger.warning("User not found");
             throw new IllegalArgumentException("User not found");
         }
 
         if (!user.checkOTP(otp)) {
+            logger.warning("OTP is incorrect");
             throw new IllegalArgumentException("OTP is incorrect");
         }
 
         if (votes.containsKey(user)) {
+            logger.warning("User has already voted");
             throw new IllegalArgumentException("User has already voted");
         }
 
+        logger.info("User " + user.getStudentId() + " voted");
         votes.put(user, ballot);
     }
 
@@ -76,6 +95,7 @@ public class VoteImpl extends UnicastRemoteObject implements Vote {
             }
         }
 
+        logger.info("Results: " + results);
         return results;
     }
 
@@ -101,14 +121,14 @@ public class VoteImpl extends UnicastRemoteObject implements Vote {
         if (this.start != null && this.start.after(this.end)) {
             throw new IllegalArgumentException("Start date must be before end date");
         }
-        if (!isVotingPeriod()) {
+        if (votingForbidden()) {
             throw new IllegalArgumentException("End date must be in the future");
         }
     }
 
-    public boolean isVotingPeriod() {
+    public boolean votingForbidden() {
         Date now = new Date();
-        return now.after(start) && now.before(end);
+        return !now.after(start) || !now.before(end);
     }
 
     private static Date parseDate(String date) {

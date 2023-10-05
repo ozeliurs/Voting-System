@@ -3,6 +3,7 @@ package client;
 import exceptions.BadCredentialsException;
 import exceptions.UserNotFoundException;
 import org.apache.commons.codec.digest.DigestUtils;
+import shared.AuthentificationStub;
 import shared.Vote;
 
 import java.io.Serializable;
@@ -13,7 +14,7 @@ import java.rmi.RemoteException;
 import java.util.Scanner;
 
 public class Client implements Serializable {
-    public static void main(String[] args) throws MalformedURLException, NotBoundException, RemoteException {
+    public static void main(String[] args) throws MalformedURLException, NotBoundException, RemoteException, UserNotFoundException, BadCredentialsException {
         // Load remote objects
         Vote vote = (Vote) Naming.lookup("rmi://localhost:2001/vote");
 
@@ -25,26 +26,9 @@ public class Client implements Serializable {
         System.out.print("Student ID: ");
         String studentId = scanner.nextLine();
 
-        System.out.print("password: ");
-        String password = scanner.nextLine();
-        String hashedPassword = DigestUtils.sha256Hex(password);
+        AuthentificationStub authentificationStub = new AuthentificationStubImpl(studentId);
 
-        int otp;
-
-        try {
-            otp = vote.checkCredentials(studentId, hashedPassword);
-
-            // We show the user it's OTP because Vella said it 👿
-            System.out.println("Your OTP is: " + otp);
-
-            System.out.println("=== Logged in ===");
-        } catch (BadCredentialsException e) {
-            System.out.println("=== Bad credentials ===");
-            return;
-        } catch (UserNotFoundException e) {
-            System.out.println("=== User not found ===");
-            return;
-        }
+        int otp = vote.authenticate(authentificationStub);
 
         while (true) {
             System.out.println("Choose an action:");
@@ -74,10 +58,6 @@ public class Client implements Serializable {
 
         BallotImpl ballot = new BallotImpl();
         ballot.addCandidates(vote.getCandidates());
-
-        // We ask th OTP because it is asked not because we need it 👿
-        System.out.println("Enter OTP: ");
-        Integer n = scanner.nextInt();
 
         System.out.println("You're about to vote for the following candidates:");
         ballot.forEach((candidate, integer) -> System.out.println(candidate));
