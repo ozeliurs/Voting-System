@@ -19,19 +19,15 @@ public class Server {
 
         Scanner scanner = new Scanner(System.in);
 
-        // Create and Bind Objects
-        UserRepositoryImpl userRepositoryImpl = new UserRepositoryImpl(10001);
-        Naming.rebind("rmi://localhost:2001/userRepository", userRepositoryImpl);
-
-        userRepositoryImpl.importUsers("users.txt");
-
         // Start a Vote
-        VoteImpl voteImpl = new VoteImpl();
+        VoteImpl voteImpl = new VoteImpl(10001);
+        Naming.rebind("rmi://localhost:2001/vote", voteImpl);
 
-        System.out.println("Loading candidates from file...");
+        System.out.print("Enter the candidates file: ");
         voteImpl.importCandidates(scanner.nextLine());
 
-        System.out.println(voteImpl.getCandidates());
+        System.out.println("Enter the users file: ");
+        voteImpl.importUsers(scanner.nextLine());
 
         System.out.print("Enter the start date (dd/mm/yyyy): ");
         voteImpl.setStart(scanner.nextLine());

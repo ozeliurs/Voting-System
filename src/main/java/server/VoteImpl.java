@@ -1,44 +1,52 @@
 package server;
 
-import java.io.BufferedReader;
+import exceptions.BadCredentialsException;
+import exceptions.UserNotFoundException;
+import shared.Vote;
+
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.ArrayList;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class VoteImpl implements shared.Vote {
+public class VoteImpl extends UnicastRemoteObject implements Vote {
 
     private Date start;
     private Date end;
-    private List<shared.Candidate> candidates;
+    private transient CandidateRepository candidateRepo;
+    private transient UserRepository userRepo;
 
-    public VoteImpl() {
-        candidates = new ArrayList<>();
+    protected VoteImpl(int port) throws RemoteException {
+        super(port);
+    }
+
+
+    @Override
+    public int checkCredentials(String username, String passwordHash) throws UserNotFoundException, BadCredentialsException, RemoteException {
+        return userRepo.checkCredentials(username, passwordHash);
     }
 
     @Override
-    public List<shared.Candidate> getCandidates() {
-        return candidates;
+    public List<shared.Candidate> getCandidates() throws RemoteException {
+        return candidateRepo.getCandidates();
     }
 
-    @Override
-    public void setCandidates(List<shared.Candidate> candidates) {
-        this.candidates = candidates;
+    public void setCandidateRepo(CandidateRepository candidateRepo) {
+        this.candidateRepo = candidateRepo;
     }
 
     public void importCandidates(String filename) throws FileNotFoundException {
-        candidates = new ArrayList<>();
-
-        // Reads a simple csv file and imports the candidates
-        BufferedReader br = new BufferedReader(new FileReader(filename));
-
-        br.lines().forEach(line -> {
-            String[] parts = line.split(",");
-            candidates.add(new CandidateImpl(Integer.parseInt(parts[0]), parts[1], parts[2], parts[3]));
-        });
+        candidateRepo = CandidateRepository.fromFile(filename);
     }
+
+    public void importUsers(String filename) throws FileNotFoundException {
+        userRepo = UserRepository.fromFile(filename);
+    }
+
+
 
     public Date getStart() {
         return start;

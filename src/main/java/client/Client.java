@@ -3,7 +3,7 @@ package client;
 import exceptions.BadCredentialsException;
 import exceptions.UserNotFoundException;
 import org.apache.commons.codec.digest.DigestUtils;
-import shared.UserRepository;
+import shared.Vote;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -15,7 +15,8 @@ import java.util.Scanner;
 public class Client implements Serializable {
     public static void main(String[] args) throws MalformedURLException, NotBoundException, RemoteException {
         // Load remote objects
-        UserRepository userRepository = (UserRepository) Naming.lookup("rmi://localhost:2001/userRepository");
+        // TODO UserRepository userRepository = (UserRepository) Naming.lookup("rmi://localhost:2001/userRepository");
+        Vote vote = (Vote) Naming.lookup("rmi://localhost:2001/vote");
 
         Scanner scanner = new Scanner(System.in);
 
@@ -32,7 +33,7 @@ public class Client implements Serializable {
         int pin;
 
         try {
-            pin = userRepository.checkCredentials(login, hashedPassword);
+            pin = vote.checkCredentials(login, hashedPassword);
             System.out.println("=== Logged in ===");
         } catch (BadCredentialsException e) {
             System.out.println("=== Bad credentials ===");
