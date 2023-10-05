@@ -33,6 +33,10 @@ public class Client implements Serializable {
 
         try {
             otp = vote.checkCredentials(studentId, hashedPassword);
+
+            // We show the user it's OTP because Vella said it 👿
+            System.out.println("Your OTP is: " + otp);
+
             System.out.println("=== Logged in ===");
         } catch (BadCredentialsException e) {
             System.out.println("=== Bad credentials ===");
@@ -70,6 +74,10 @@ public class Client implements Serializable {
 
         BallotImpl ballot = new BallotImpl();
         ballot.addCandidates(vote.getCandidates());
+
+        // We ask th OTP because it is asked not because we need it 👿
+        System.out.println("Enter OTP: ");
+        Integer n = scanner.nextInt();
 
         System.out.println("You're about to vote for the following candidates:");
         ballot.forEach((candidate, integer) -> System.out.println(candidate));

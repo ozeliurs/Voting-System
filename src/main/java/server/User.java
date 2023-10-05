@@ -5,9 +5,9 @@ import java.util.Objects;
 
 public class User {
 
-    private String studentId;
+    private final String studentId;
 
-    private String passwordHash;
+    private final String passwordHash;
 
     private int otp;
 

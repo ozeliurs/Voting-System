@@ -19,7 +19,7 @@ public class VoteImpl extends UnicastRemoteObject implements Vote {
     public transient CandidateRepository candidateRepo;
     public transient UserRepository userRepo;
 
-    private Map<User, Ballot> votes = new HashMap<>();
+    private final Map<User, Ballot> votes = new HashMap<>();
 
     protected VoteImpl(int port) throws RemoteException {
         super(port);
@@ -39,6 +39,10 @@ public class VoteImpl extends UnicastRemoteObject implements Vote {
 
     @Override
     public void vote(Ballot ballot, String studentId, int otp) throws RemoteException {
+        if (!isVotingPeriod()) {
+            throw new IllegalArgumentException("Voting period is over");
+        }
+
         User user = userRepo.findUser(studentId);
 
         if (user == null) {
@@ -85,10 +89,6 @@ public class VoteImpl extends UnicastRemoteObject implements Vote {
         userRepo = new UserRepository(filepath);
     }
 
-    public Date getStart() {
-        return start;
-    }
-
     public void setStart(String start) {
         this.start = parseDate(start);
         if (this.end != null && this.start.after(this.end)) {
@@ -96,15 +96,19 @@ public class VoteImpl extends UnicastRemoteObject implements Vote {
         }
     }
 
-    public Date getEnd() {
-        return end;
-    }
-
     public void setEnd(String end) {
         this.end = parseDate(end);
         if (this.start != null && this.start.after(this.end)) {
             throw new IllegalArgumentException("Start date must be before end date");
         }
+        if (!isVotingPeriod()) {
+            throw new IllegalArgumentException("End date must be in the future");
+        }
+    }
+
+    public boolean isVotingPeriod() {
+        Date now = new Date();
+        return now.after(start) && now.before(end);
     }
 
     private static Date parseDate(String date) {
