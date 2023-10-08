@@ -108,7 +108,7 @@ public class VoteImpl extends UnicastRemoteObject implements Vote {
 
     // ===== Getters and setters =====
 
-    private void printResults() throws RemoteException {
+    public void printResults() throws RemoteException {
         Map<Candidate, Integer> results = getResults();
         System.out.println("Results:");
         results.forEach((candidate, integer) -> System.out.println(candidate + ": " + integer));

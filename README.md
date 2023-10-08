@@ -5,12 +5,13 @@
 ### Nos choix
 - Utilisation de .csv pour les listes de user et de candidats
 - Le vote se fait dans la console, candidat par candidat
+- Les résultats sont affichés lorsqu'on les demande et non pas à la fin du vote
 
 ### Bonus
 - Tous les bonus ont été fait
 
 ### Difficultés
-- La récupération du stub du client par le server à été difficile car peut intuitive.
+- Pas de difficultés rencontrées.
 
 ### Fonctionnement
 
@@ -21,6 +22,8 @@
 - Rentrer les dates de début et de fin du vote au format jj/mm/aaaa
 
 Le serveur est maintenant opérationnel. Vous pouvez afficher/ajouter des utilisateurs/users en écrivant le numéro correspondant.
+
+Le serveur peut également afficher les résultats pendant et après le vote.
 
 - Lancer la classe Client du package client
 - Rentrer un numéro d'étudiant ajouté ou déjà existant comme "ozeliurs"

@@ -46,7 +46,8 @@ public class Server {
             System.out.println("2. Add candidate");
             System.out.println("3. List users");
             System.out.println("4. Add user");
-            System.out.println("5. Exit");
+            System.out.println("5. Show results");
+            System.out.println("6. Exit");
 
             int action = scanner.nextInt();
             scanner.nextLine();
@@ -83,6 +84,9 @@ public class Server {
                     voteImpl.userRepo.save();
                     break;
                 case 5:
+                    voteImpl.printResults();
+                    break;
+                case 6:
                     return;
                 default:
                     System.out.println("Invalid action");
